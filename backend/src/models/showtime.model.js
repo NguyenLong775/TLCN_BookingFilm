@@ -43,6 +43,10 @@ const showtimeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  deletedAt: {  // Di chuyển `deletedAt` ra ngoài trường `created_at`
+    type: Date, // Trường này sẽ lưu thời gian xóa
+    default: null
+  },
 });
 
 const Showtime = mongoose.model("Showtime", showtimeSchema);
