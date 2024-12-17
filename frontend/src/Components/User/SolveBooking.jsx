@@ -336,7 +336,7 @@ const generateSeats = (bookedSeats, vipPrice, normalPrice) => {
             rowSeats.push({
                 seatId,
                 status: bookedSeats.includes(seatId) ? 'booked' : 'available',
-                price: row >= 'D' && row <= 'G' ? vipPrice : normalPrice,
+                price: row >= 'D' && row <= 'G' ? vipPrice : normalPrice, 
                 type: row >= 'D' && row <= 'G' ? 'vip' : 'regular',
             });
         }
