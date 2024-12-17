@@ -21,7 +21,7 @@ const updateShowtimeService = async (id, showtime) => {
 
 const getShowtimesService = async () => {
   try {
-    return await Showtime.find()
+    return await Showtime.find({ deletedAt: null })
       .populate("film_id")
       .populate("branch_id")
       .then((showtimes) => {
@@ -87,10 +87,40 @@ const checkShowtimeExist = async (showtime_id) => {
   }
 };
 
+const deleteShowtimeService = async (showtime_id) => {
+  try {
+    const showtime = await Showtime.findById(showtime_id);
+
+    if (!showtime) {
+      throw new Error("Showtime not found");
+    }
+
+    // Cập nhật trường deletedAt để thực hiện xóa mềm
+    showtime.deletedAt = new Date();
+    await showtime.save();
+    return showtime;
+  } catch (error) {
+    throw new Error("Error during soft delete: " + error.message);
+  }
+};
+
+const getShowtimesByIdService = async (showtime_id) => {
+  try {
+    const showtime = await Showtime.findById(showtime_id);
+    return showtime;
+  } catch (error) {
+    throw new Error("Error " + error.message);
+  }
+};
+
+
+
 module.exports = {
   createShowtimeService,
   updateShowtimeService,
   getShowtimesService,
   getShowTimeByFilmIdService,
   checkShowtimeExist,
+  deleteShowtimeService,
+  getShowtimesByIdService,
 };

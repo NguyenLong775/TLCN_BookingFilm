@@ -4,6 +4,8 @@ import styled from "styled-components";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ScreeningModal from "../../modal/ScreeningModal.jsx";
+import ConfirmDelete from "../../modal/ConfirmDelete.jsx";
+import UpdateShowtime from "../../modal/UpdateShowtime.jsx";
 import Loading from "../../utils/Loading.jsx";
 import axios from "axios";
 
@@ -14,6 +16,9 @@ function MovieScreenings() {
     const [showModal, setShowModal] = useState(false);
     const [screeningsList, setScreeningsList] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedScreeningId, setSelectedScreeningId] = useState(null);
+    const [showModalUpdate, setShowModalUpdate] = useState(false);  // State để hiển thị modal UpdateShowtime
 
     const fetchScreenings = async () => {
         try {
@@ -52,6 +57,28 @@ function MovieScreenings() {
         setShowModal(false);
     };
 
+    const handleDeleteScreening = (id) => {
+        setSelectedScreeningId(id); // Lưu ID của buổi chiếu cần xóa
+        setShowDeleteModal(true); // Hiển thị modal xác nhận xóa
+    };
+
+    const handleConfirmDelete = async () => {
+        try {
+            console.log("Gui gi day", selectedScreeningId);
+            await axios.delete(`${apiGetShowTime}${selectedScreeningId}`);
+            fetchScreenings();  // Sau khi xóa, lấy lại danh sách buổi chiếu
+            setShowDeleteModal(false);  // Đóng modal xác nhận
+        } catch (error) {
+            console.error("Lỗi khi xóa buổi chiếu:", error);
+            console.log("Đã nhận lỗi khi gửi yêu cầu", error.response?.data);  // In thông tin lỗi từ server nếu có
+        }
+    };
+
+    const handleEditScreening = (id) => {
+        setSelectedScreeningId(id); // Lưu ID của buổi chiếu cần chỉnh sửa
+        setShowModalUpdate(true);  // Mở modal UpdateShowtime
+    };
+
     return (
         <>
             {loading && <Loading/>}
@@ -78,6 +105,7 @@ function MovieScreenings() {
                         <th>Duration</th>
                         <th>End Time</th>
                         <th>Number of Seats</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -96,6 +124,17 @@ function MovieScreenings() {
                                         : "N/A"}
                                 </td>
                                 <td>{show.screen ? show.screen.total_seat : "N/A"}</td>
+                                <td>
+                                    <ButtonContainer>
+                                    <EditButton onClick={() => handleEditScreening(show._id)}>
+                                            Edit
+                                        </EditButton>
+                                        <DeleteButton onClick={() => handleDeleteScreening(show._id)}>
+                                            Xóa
+                                        </DeleteButton>
+                                    </ButtonContainer>
+                                </td>
+
                             </tr>
                         ))
                     ) : (
@@ -108,7 +147,23 @@ function MovieScreenings() {
                 {showModal && (
                     <ScreeningModal onClose={handleCloseModal} onRefresh={fetchScreenings} data={screeningsList}/>
                 )}
-            </Container>
+            </Container> 
+            
+            {/* Hiển thị ConfirmDelete modal khi showDeleteModal = true */}
+            {showDeleteModal && (
+                <ConfirmDelete
+                    onClose={() => setShowDeleteModal(false)} // Đóng modal
+                    onSubmit={handleConfirmDelete} // Xác nhận xóa
+                />
+            )}
+
+            {/* Modal cập nhật buổi chiếu */}
+            {showModalUpdate &&  (
+                <UpdateShowtime 
+                    onClose={() => setShowModalUpdate(false)} 
+                    onRefresh={fetchScreenings} 
+                />
+            )}
         </>
     );
 }
@@ -157,4 +212,28 @@ const CreateButton = styled.button`
     &:hover {
         background-color: #45a049;
     }
+`;
+
+const DeleteButton = styled.button`
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    &:hover {
+        background-color: #c82333;
+    }
+`;
+
+const EditButton = styled.button`
+    padding: 5px 10px;
+    background-color: orange;
+    color: white;
+    cursor: pointer;
+`;
+
+const ButtonContainer = styled.div`
+    display: flex;
+    gap: 10px;  // Tạo khoảng cách giữa các nút
 `;

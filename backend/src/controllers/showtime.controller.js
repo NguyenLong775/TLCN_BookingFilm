@@ -4,6 +4,8 @@ const {
   getShowtimesService,
   updateShowtimeService,
   getShowTimeByFilmIdService,
+  deleteShowtimeService,
+  getShowtimesByIdService
 } = require("../services/showtime.service");
 
 const getShowtimes = async (req, res) => {
@@ -71,9 +73,33 @@ const putUpdateShowtime = async (req, res) => {
   }
 };
 
+const deleteShowtime = async (req, res) => {
+  try {
+    const id = req.params.id; 
+    console.log("In ra id lay duoc",id)
+    const deleteshowtime = await deleteShowtimeService(id)
+    res.status(200).json(deleteshowtime);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+const getShowtimesById = async (req, res) => {
+  try {
+    const id = req.params.id; 
+    console.log("In ra id lay duoc",id)
+    const showtimebyid = await getShowtimesByIdService(id)
+    res.status(200).json(showtimebyid);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
 module.exports = {
   getShowtimes,
   postCreateShowtime,
   putUpdateShowtime,
   getShowtimesByFilmId,
+  deleteShowtime,
+  getShowtimesById
 };
