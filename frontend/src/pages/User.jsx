@@ -145,28 +145,30 @@ const ModalContent = styled.div`
     background: #2c2c2c;
     padding: 30px;
     border-radius: 15px;
-    text-align: left;
-    width: 800px;
     color: #fff;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
+    width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
 `;
 
+const TopSection = styled.div`
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+`;
 
 const MovieDetailImage = styled.img`
     width: 300px;
-    height: 100%;
+    height: 450px;
     object-fit: cover;
     border-radius: 10px;
     margin-right: 20px;
 `;
 
-
 const MovieDetailInfo = styled.div`
     flex: 1;
+    text-align: left;
 `;
-
 
 const MovieDetailHeading = styled.h2`
     font-size: 28px;
@@ -175,14 +177,12 @@ const MovieDetailHeading = styled.h2`
     font-weight: bold;
 `;
 
-
 const MovieDetailText = styled.p`
-    font-size: 18px;
-    margin-bottom: 10px;
+    font-size: 16px;
+    margin-bottom: 8px;
     color: #ddd;
     line-height: 1.5;
 `;
-
 
 const ButtonGroup = styled.div`
     margin-top: 20px;
@@ -190,6 +190,58 @@ const ButtonGroup = styled.div`
     gap: 15px;
 `;
 
+const ReviewSection = styled.div`
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #444;
+    h3 {
+        font-size: 20px;
+        color: #ffcd32;
+        margin-bottom: 15px;
+    }
+    p {
+        color: #ccc;
+    }
+`;
+
+const ReviewList = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+`;
+
+const ReviewItem = styled.div`
+    width: calc(50% - 10px); /* giữ 2 cột */
+    background: #3a3a3a;
+    padding: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #555;
+    font-size: 14px;
+    line-height: 1.4;
+
+    p {
+        margin-bottom: 6px;
+        word-break: break-word;
+    }
+
+    strong {
+        color: #fff;
+    }
+`;
+
+const TrailerSection = styled.div`
+    margin-top: 30px;
+
+    h3 {
+        color: #ffcd32;
+        margin-bottom: 12px;
+    }
+
+    iframe {
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(255, 205, 50, 0.5);
+    }
+`;
 
 const StayPageCustom = styled.button`
     background-color: #ffcd32;
@@ -227,61 +279,76 @@ const BuyTicketButton = styled.button`
 
 const apiFilmUrl = import.meta.env.VITE_API_FILM_URL
 
+
 // eslint-disable-next-line react/prop-types
-const MovieDetailModal = ({ movie, reviews, onClose, onBuyTicket }) => (
-    <ModalOverlay>
-        <ModalContent>
-            {/* eslint-disable-next-line react/prop-types */}
-            <MovieDetailImage src={movie.image_url} alt={movie.film_name} />
-            <MovieDetailInfo>
-                {/* eslint-disable-next-line react/prop-types */}
-                <MovieDetailHeading>{movie.film_name}</MovieDetailHeading>
-                {/* eslint-disable-next-line react/prop-types */}
-                <MovieDetailText><strong>Mô tả:</strong> {movie.description}</MovieDetailText>
-                {/* eslint-disable-next-line react/prop-types */}
-                <MovieDetailText><strong>Thể loại:</strong> {movie.category_id?.category_name}</MovieDetailText>
-                {/* eslint-disable-next-line react/prop-types */}
-                <MovieDetailText><strong>Ngày phát hành:</strong> {new Date(movie.release_date).toLocaleDateString()}
-                </MovieDetailText>
-                {/* eslint-disable-next-line react/prop-types */}
-                <MovieDetailText><strong>Thời lượng:</strong> {movie.duration} phút</MovieDetailText>
-                {/* eslint-disable-next-line react/prop-types */}
-                <MovieDetailText><strong>Quốc gia:</strong> {movie.country}</MovieDetailText>
-                {/* eslint-disable-next-line react/prop-types */}
-                <MovieDetailText><strong>Đạo diễn:</strong> {movie.director}</MovieDetailText>
-                {/* eslint-disable-next-line react/prop-types */}
-                <MovieDetailText><strong>Diễn viên:</strong> {movie.list_actor?.join(', ')}</MovieDetailText>
+const MovieDetailModal = ({ movie, reviews, onClose, onBuyTicket }) => {
+    
+    // Hàm lấy ID YouTube từ url
+    const getYoutubeId = (url) => {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    };
 
+    const videoId = getYoutubeId(movie.trailer_url);
+    
+    return (
+        <ModalOverlay>
+            <ModalContent>
+                <TopSection>
+                    <MovieDetailImage src={movie.image_url} alt={movie.film_name} />
+                    <MovieDetailInfo>
+                        <MovieDetailHeading>{movie.film_name}</MovieDetailHeading>
+                        <MovieDetailText><strong>Mô tả:</strong> {movie.description}</MovieDetailText>
+                        <MovieDetailText><strong>Thể loại:</strong> {movie.category_id?.category_name}</MovieDetailText>
+                        <MovieDetailText><strong>Ngày phát hành:</strong> {new Date(movie.release_date).toLocaleDateString()}</MovieDetailText>
+                        <MovieDetailText><strong>Thời lượng:</strong> {movie.duration} phút</MovieDetailText>
+                        <MovieDetailText><strong>Quốc gia:</strong> {movie.country}</MovieDetailText>
+                        <MovieDetailText><strong>Đạo diễn:</strong> {movie.director}</MovieDetailText>
+                        <MovieDetailText><strong>Diễn viên:</strong> {movie.list_actor?.join(', ')}</MovieDetailText>
+                        <ButtonGroup>
+                            <BuyTicketButton onClick={() => onBuyTicket(movie)}>Mua vé</BuyTicketButton>
+                            <StayPageCustom onClick={onClose}>Đóng</StayPageCustom>
+                        </ButtonGroup>
+                    </MovieDetailInfo>
+                </TopSection>
 
-                {/* Hiển thị đánh giá */}
-                <h3 style={{ color: '#ffcd32' }}>Đánh giá:</h3>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+                <ReviewSection>
+                    <h3>Đánh giá:</h3>
                     {reviews && reviews.length > 0 ? (
-                        reviews.map((review, index) => (
-                            <div key={index} style={{ width: '48%', border: '1px solid #ccc', padding: '10px', borderRadius: '8px' }}>
-                                <p><strong>{review.user_id.email}</strong></p>
-                                <p>{review.rate}/10 <span style={{ color: '#ffcd32' }}>⭐</span></p> {/* Hiển thị ngôi sao vàng */}
-                                <p>{review.comment}</p>
-                                <p>{new Date(review.created_at).toLocaleString()}</p>
-                            </div>
-                        ))
+                        <ReviewList>
+                            {reviews.map((review, index) => (
+                                <ReviewItem key={index}>
+                                    <p><strong>{review.user_id.email}</strong></p>
+                                    <p>{review.rate}/10 <span style={{ color: '#ffcd32' }}>⭐</span></p>
+                                    <p>{review.comment}</p>
+                                    <p>{new Date(review.created_at).toLocaleString()}</p>
+                                </ReviewItem>
+                            ))}
+                        </ReviewList>
                     ) : (
                         <p>Chưa có đánh giá nào.</p>
                     )}
-                </div>
+                </ReviewSection>
 
-
-                <ButtonGroup>
-                    <BuyTicketButton onClick={() => onBuyTicket(movie)}>Mua vé</BuyTicketButton>
-                    <StayPageCustom onClick={onClose}>Đóng</StayPageCustom>
-
-
-                </ButtonGroup>
-            </MovieDetailInfo>
-        </ModalContent>
-    </ModalOverlay>
-);
-
+                {videoId && (
+                    <TrailerSection>
+                        <h3>Trailer:</h3>
+                        <iframe
+                            width="100%"
+                            height="360"
+                            src={`https://www.youtube.com/embed/${videoId}`}
+                            title="Trailer phim"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
+                    </TrailerSection>
+                )}
+            </ModalContent>
+        </ModalOverlay>
+    );
+};
 
 // eslint-disable-next-line react/prop-types
 function MovieList({ dataBookingFilm, onMovieClick, onBuyTicket }) {
@@ -457,7 +524,7 @@ function User({ onLogout }) {
                     <MovieDetailModal 
                     movie={selectedMovie} 
                     reviews={reviews} 
-                    nClose={closeMovieDetailModal}
+                    onClose={closeMovieDetailModal}
                     onBuyTicket={handleBuyTicketClick} />
                 )}
                 <Footer />

@@ -52,6 +52,7 @@ function UpdateMovieModal({movie, onClose, onSubmit}) {
             list_actor: movie.listActor,
             description: movie.description,
             image_url: movie.imageUrl,
+            trailer_url: movie.trailer_url || "", 
         });
         setIsChanged(false);
     }, [movie]);
@@ -124,6 +125,7 @@ function UpdateMovieModal({movie, onClose, onSubmit}) {
             url = `${apiFilmUrl}${movieData.id}`;
         }
 
+        
         const formData = new FormData();
 
         for (const key in movieData) {
@@ -141,6 +143,8 @@ function UpdateMovieModal({movie, onClose, onSubmit}) {
             }
         }
 
+        console.log("Trailer URL in formData:", movieData.trailer_url);
+        
         if (selectedImage) {
             formData.append("image", selectedImage);
         } else if (method === "POST") {
@@ -289,6 +293,15 @@ function UpdateMovieModal({movie, onClose, onSubmit}) {
                                 onChange={handleInputChange}
                             />
                         </FormItem>
+                        <FormItem fullWidth>
+    <LabelCustom>Trailer URL:</LabelCustom>
+    <StyledInput
+        type="text"
+        name="trailer_url"
+        value={movieData.trailer_url}
+        onChange={handleInputChange}
+    />
+</FormItem>
                         <FormItem fullWidth>
                             <LabelCustom>Image:</LabelCustom>
                             <StyledInput

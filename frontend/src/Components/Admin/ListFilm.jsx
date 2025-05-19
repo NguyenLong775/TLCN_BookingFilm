@@ -38,6 +38,7 @@ function ListFilm() {
                     director: movie.director,
                     listActor: movie.list_actor.join(", ") || "Unknown",
                     imageUrl: movie.image_url || "",
+                    trailer_url: movie.trailer_url || "",
                     isActive: movie.is_active,
                 }));
 
@@ -78,6 +79,7 @@ function ListFilm() {
             director: "",
             listActor: "",
             imageUrl: "",
+            trailer_url:"",
             isActive: true,
         });
         setIsCreateMode(true);
@@ -106,7 +108,9 @@ function ListFilm() {
                 director: movie.director,
                 listActor: movie.list_actor.join(", ") || "Unknown",
                 imageUrl: movie.image_url || "",
+                trailer_url: movie.trailer_url || "",
                 isActive: movie.is_active,
+                
             }));
 
             setMovies(apiMovies);
@@ -141,8 +145,10 @@ function ListFilm() {
                 director: movie.director,
                 listActor: movie.list_actor.join(", ") || "Unknown",
                 imageUrl: movie.image_url || "",
+                trailer_url: movie.trailer_url || "",
                 isActive: movie.is_active,
             }));
+    
 
             setMovies(apiMovies);
             handleConfirmClose();
