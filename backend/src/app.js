@@ -11,6 +11,7 @@ const filmRouter = require("./routes/film.route");
 const authRouter = require("./routes/auth.route");
 const userRouter = require("./routes/user.route");
 const zalopayRoute = require("./routes/zalopay.route");
+const reviewRouter = require("./routes/review.route");
 
 const app = express();
 
@@ -28,5 +29,7 @@ app.use("/api/v1/film", filmRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/zalopay", zalopayRoute);
+app.use("/api/v1/review", reviewRouter);
+
 
 module.exports = app;
