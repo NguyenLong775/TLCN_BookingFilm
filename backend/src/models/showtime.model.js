@@ -35,6 +35,10 @@ const showtimeSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  booked_seats: {
+    type: [String],
+    default: [],
+  },
   is_active: {
     type: Boolean,
     default: true,

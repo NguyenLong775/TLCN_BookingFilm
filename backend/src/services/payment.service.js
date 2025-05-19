@@ -1,3 +1,4 @@
+const Showtime = require("../models/showtime.model");
 const Payment = require("../models/payment.model");
 const { default: axios } = require("axios");
 
@@ -72,8 +73,10 @@ const paymentWithMomoService = async (payment) => {
   //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
   //parameters
   var orderInfo = "pay with MoMo";
-  var redirectUrl = "https://booking-film.onrender.com/transaction-status";
-  var ipnUrl = `${process.env.HOSTNAME}/api/v1/payment/callback`;
+  var redirectUrl = "http://localhost:5173/transaction-status";
+  // var redirectUrl = "https://booking-film.onrender.com/transaction-status";
+  // var ipnUrl = `https://9bf3-2405-4803-c684-9240-7997-6ba2-5618-cb1b.ngrok-free.app/api/v1/payment/callback`; //fix ngrok
+    var ipnUrl = `https://8a3e-123-21-89-71.ngrok-free.app/api/v1/payment/callback`; //fix ngrok
   var requestType = "payWithMethod";
 
   var amount = paid_amount;
@@ -201,6 +204,10 @@ const callBackMoMoService = async (data) => {
       total_price,
       discount,
       paid_amount,
+    });
+    // 2. Cập nhật các ghế đã đặt vào Showtime.booked_seats
+    await Showtime.findByIdAndUpdate(show_time_id, {
+      $addToSet: { booked_seats: { $each: list_seat } }  // tránh thêm trùng
     });
   } catch (error) {
     console.error("Error in MoMo callback:", error.message);

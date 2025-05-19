@@ -270,7 +270,7 @@ function BookingModal({movieTitle, movieId, onClose}) {
                             {groupedShowTimes[selectedDate].map((showTime) => (
                                 <StyledShowTime key={showTime._id} onClick={() => handleTimeSlotClick(showTime)}>
                                     <TimeSlot>{new Date(showTime.start_time).toISOString().substring(11, 16)}</TimeSlot>
-                                    <StyledSpan>Màn hình: {showTime.screen.screen_name}</StyledSpan>
+                                {/* Màn hình: */}    <StyledSpan>{showTime.screen.screen_name}</StyledSpan> 
                                 </StyledShowTime>
                             ))}
                         </ShowTimeGroup>

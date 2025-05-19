@@ -1,6 +1,7 @@
-﻿import {useEffect, useState} from "react";
+﻿import { useEffect, useState } from "react";
 import styled from "styled-components";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 const TitleCustom = styled.h2`
     margin: 0;
@@ -8,21 +9,25 @@ const TitleCustom = styled.h2`
     cursor: pointer;
 `;
 
+
 const RightHeaderWrapper = styled.div`
     display: flex;
     align-items: center;
 `
+
 
 const EmailCustom = styled.span`
     margin-right: 1rem;
     font-weight: bold;
 `
 
+
 // eslint-disable-next-line react/prop-types
-function Header({onLogout}) {
+function Header({ onLogout }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const navigate = useNavigate();
     const [token, setToken] = useState(null);
+
 
     useEffect(() => {
         const tokenString = localStorage.getItem("token");
@@ -38,14 +43,20 @@ function Header({onLogout}) {
         }
     }, []);
 
+
     const handleLoginClick = () => {
         navigate("/login");
     };
+
 
     const handleHistoryClick = () => {
         console.log("Button clicked");
         navigate("/user/history");
     };
+    const handleReviewClick = () => {
+        navigate("/user/review");
+    };
+
 
     const handleLogoutClick = () => {
         console.log("Button clicked");
@@ -54,6 +65,7 @@ function Header({onLogout}) {
         setIsLoggedIn(false);
         navigate("/");
     };
+
 
     return (
         <header
@@ -91,6 +103,20 @@ function Header({onLogout}) {
                             History
                         </button>
                         <button
+                            onClick={handleReviewClick}
+                            style={{
+                                backgroundColor: "#28a745",
+                                color: "#fff",
+                                border: "none",
+                                padding: "8px 16px",
+                                marginRight: "1rem",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                            }}
+                        >
+                            Review
+                        </button>
+                        <button
                             onClick={handleLogoutClick}
                             style={{
                                 backgroundColor: "#28a745",
@@ -126,4 +152,8 @@ function Header({onLogout}) {
     );
 }
 
+
 export default Header;
+
+
+

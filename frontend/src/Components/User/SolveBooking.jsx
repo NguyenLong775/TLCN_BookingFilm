@@ -1,11 +1,12 @@
-﻿import {useEffect, useState} from 'react';
+﻿import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import {useNavigate} from "react-router-dom";
-import {useLocation} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Loading from "../../utils/Loading.jsx";
 import Footer from "../../utils/User/Footer.jsx";
 import Header from "../../utils/User/Header.jsx";
+
 
 const Container = styled.div`
     padding: 100px 20px;
@@ -28,10 +29,12 @@ const BackButton = styled.button`
     transition: background-color 0.3s;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 
+
     &:hover {
         background-color: #0056b3;
     }
 `;
+
 
 const BodyWrapper = styled.div`
     display: flex;
@@ -80,25 +83,26 @@ const Seat = styled.div`
     width: 40px;
     height: 40px;
     border-radius: 8px;
-    background-color: ${({status, type}) => {
+    background-color: ${({ status, type }) => {
         if (status === 'booked') return '#4a4a4a';
         if (status === 'selected') return '#42e0f5';
         if (type === 'vip') return '#f1c40f';
         return '#bdc3c7';
     }};
-    color: ${({status}) => (status === 'booked' ? '#ffffff' : '#000000')};
+    color: ${({ status }) => (status === 'booked' ? '#ffffff' : '#000000')};
     margin: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: ${({status}) => (status === 'booked' ? 'not-allowed' : 'pointer')};
+    cursor: ${({ status }) => (status === 'booked' ? 'not-allowed' : 'pointer')};
     user-select: none;
     transition: background-color 0.3s ease, color 0.3s ease;
 
+
     &:hover {
-        background-color: ${({status}) =>
-                status === 'available' ? '#4caf50' : ''};
-        transform: ${({status}) => (status === 'available' ? 'scale(1.1)' : 'none')};
+        background-color: ${({ status }) =>
+        status === 'available' ? '#4caf50' : ''};
+        transform: ${({ status }) => (status === 'available' ? 'scale(1.1)' : 'none')};
     }
 `;
 const DetailsContainer = styled.div`
@@ -140,6 +144,7 @@ const MovieAttribute = styled.p`
     font-size: 16px;
     line-height: 1.5;
     padding: 0 10%;
+
 
     & > strong {
         margin-right: 5px;
@@ -184,10 +189,12 @@ const ButtonVoucherCustom = styled.button`
     transition: background-color 0.3s;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 
+
     &:hover {
         background-color: #0056b3;
     }
 `;
+
 
 const NotificationModal = styled.div`
     position: fixed;
@@ -202,6 +209,7 @@ const NotificationModal = styled.div`
     z-index: 1000;
 `;
 
+
 const NotificationContent = styled.div`
     background-color: #ffffff;
     padding: 20px;
@@ -211,17 +219,20 @@ const NotificationContent = styled.div`
     width: 400px;
 `;
 
+
 const NotificationTitle = styled.h4`
     margin-bottom: 10px;
     font-size: 18px;
     color: #000000;
 `;
 
+
 const NotificationText = styled.p`
     font-size: 16px;
     color: #333333;
     margin-bottom: 20px;
 `;
+
 
 const CloseButton = styled.button`
     padding: 10px 20px;
@@ -233,10 +244,12 @@ const CloseButton = styled.button`
     font-size: 16px;
     transition: background-color 0.3s;
 
+
     &:hover {
         background-color: #0056b3;
     }
 `;
+
 
 const PaymentButton = styled.button`
     width: 100%;
@@ -253,6 +266,7 @@ const PaymentButton = styled.button`
     justify-content: center;
     gap: 10px;
 
+
     &:disabled {
         cursor: not-allowed;
         opacity: 0.7;
@@ -261,12 +275,14 @@ const PaymentButton = styled.button`
 const MoMoButton = styled(PaymentButton)`
     background-color: #ff4081;
 
+
     &:hover {
         background-color: #e91e63;
     }
 `;
 const ZaloButton = styled(PaymentButton)`
     background-color: #007BFF;
+
 
     &:hover {
         background-color: #0056b3;
@@ -287,10 +303,11 @@ const LegendItem = styled.div`
 const LegendColor = styled.div`
     width: 20px;
     height: 20px;
-    background-color: ${({color}) => color};
+    background-color: ${({ color }) => color};
     margin-right: 5px;
     border-radius: 5px;
 `;
+
 
 const TotalPriceContainer = styled.div`
     text-align: left;
@@ -308,14 +325,17 @@ const TotalPriceContainer = styled.div`
     gap: 10px;
     transition: all 0.3s ease;
 
+
     strong {
         color: #f1c40f;
     }
+
 
     .selected-seats {
         color: #42e0f5;
         font-weight: bold;
     }
+
 
     .total-amount {
         color: #4caf50;
@@ -324,38 +344,52 @@ const TotalPriceContainer = styled.div`
     }
 `;
 
-const generateSeats = (bookedSeats, vipPrice, normalPrice) => {
-    const rows = 'ABCDEFGHIJ'.split('');
-    const seatsPerRow = 12;
+
+const generateSeats = (bookedSeats, vipPrice, normalPrice, totalSeats) => {
+    const seatsPerRow = 10;
+    const numRows = Math.ceil(totalSeats / seatsPerRow); // ví dụ: 73 ghế thì 8 hàng
     const seats = [];
 
-    rows.forEach((row) => {
+
+    for (let r = 0; r < numRows; r++) {
+        const row = String.fromCharCode(65 + r); // 'A', 'B', ..., 'Z'
         const rowSeats = [];
+
+
         for (let i = 1; i <= seatsPerRow; i++) {
             const seatId = `${row}${i}`;
             rowSeats.push({
                 seatId,
                 status: bookedSeats.includes(seatId) ? 'booked' : 'available',
-                price: row >= 'D' && row <= 'G' ? vipPrice : normalPrice, 
-                type: row >= 'D' && row <= 'G' ? 'vip' : 'regular',
+                price: row >= 'D' && row <= 'F' ? vipPrice : normalPrice,
+                type: row >= 'D' && row <= 'F' ? 'vip' : 'regular',
             });
         }
+
+
         seats.push(rowSeats);
-    });
+    }
+
 
     return seats;
 };
+
+
+
+
+
 
 const apiPaymentUrl = import.meta.env.VITE_API_PAYMENT_URL
 const apiDiscountUrl = import.meta.env.VITE_API_DISCOUNT_URL
 const apiCreateOrderUrl = import.meta.env.VITE_API_CREATE_ORDER_URL
 const apiMomoPayUrl = import.meta.env.VITE_API_MOMO_PAY_URL
 
+
 // eslint-disable-next-line react/prop-types
-function SolveBooking({onLogout}) {
+function SolveBooking({ onLogout }) {
     const location = useLocation();
     const navigate = useNavigate();
-    const {showTimeDetails, filmDetails} = location.state || {};
+    const { showTimeDetails, filmDetails } = location.state || {};
     const [seats, setSeats] = useState([]);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [voucherCode, setVoucherCode] = useState('');
@@ -365,7 +399,17 @@ function SolveBooking({onLogout}) {
     const [showNotification, setShowNotification] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+
     console.log("showTimeDetails", showTimeDetails);
+    const id = showTimeDetails._id;
+    console.log("check id suat chieu", id);
+
+
+    const total_seat = showTimeDetails.screen.total_seat
+    console.log("check total seat", total_seat);
+
+
+
 
     useEffect(() => {
         const fetchSeatsAndDetails = async () => {
@@ -376,9 +420,11 @@ function SolveBooking({onLogout}) {
                         `${apiPaymentUrl}${showTimeDetails._id}/showtime`
                     );
 
+
                     const bookedSeats = response.data.flatMap((payment) => payment.list_seat);
 
-                    setSeats(generateSeats(bookedSeats, showTimeDetails.vip_price, showTimeDetails.normal_price));
+
+                    setSeats(generateSeats(bookedSeats, showTimeDetails.vip_price, showTimeDetails.normal_price, showTimeDetails.screen.total_seat));
                     setIsLoading(false);
                 } catch (error) {
                     console.error("Error fetching payment details:", error);
@@ -387,8 +433,10 @@ function SolveBooking({onLogout}) {
             }
         };
 
+
         fetchSeatsAndDetails();
     }, [showTimeDetails]);
+
 
     const totalPrice = selectedSeats.reduce((total, seatId) => {
         const seat = seats.flat().find((s) => s.seatId === seatId);
@@ -398,12 +446,16 @@ function SolveBooking({onLogout}) {
     }, 0);
 
 
+
+
     const handleSeatClick = (rowIndex, seatIndex) => {
         const seatId = seats[rowIndex][seatIndex].seatId;
+
 
         if (seats[rowIndex][seatIndex].status === 'booked') {
             return;
         }
+
 
         setSeats((prevSeats) =>
             prevSeats.map((row, i) =>
@@ -420,6 +472,7 @@ function SolveBooking({onLogout}) {
             )
         );
 
+
         setSelectedSeats((prevSelectedSeats) => {
             if (prevSelectedSeats.includes(seatId)) {
                 return prevSelectedSeats.filter((s) => s !== seatId);
@@ -428,6 +481,7 @@ function SolveBooking({onLogout}) {
             }
         });
     };
+
 
     const applyVoucher = async () => {
         setIsLoading(true);
@@ -438,7 +492,8 @@ function SolveBooking({onLogout}) {
                 code: voucherCode,
             });
 
-            const {discountPercent} = response.data;
+
+            const { discountPercent } = response.data;
             setDiscount(discountPercent);
             setVoucherSuccess(`Áp dụng mã giảm giá thành công! Bạn được giảm ${discountPercent}%`);
             setShowNotification(true);
@@ -451,6 +506,7 @@ function SolveBooking({onLogout}) {
         }
     };
     const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+
 
     const handlePaymentZalo = async () => {
         if (selectedSeats.length === 0) {
@@ -468,11 +524,13 @@ function SolveBooking({onLogout}) {
             const parsedToken = JSON.parse(tokenString);
             const token = parsedToken?.token;
 
+
             if (!token) {
                 alert("Token không hợp lệ. Vui lòng đăng nhập lại!");
                 setIsPaymentLoading(false);
                 return;
             }
+
 
             const totalAmount = selectedSeats.reduce((total, seatId) => {
                 const seat = seats.flat().find((s) => s.seatId === seatId);
@@ -489,11 +547,11 @@ function SolveBooking({onLogout}) {
                     paid_amount: totalAmount - (totalAmount * discount) / 100,
                 },
                 {
-                    headers: {Authorization: `Bearer ${token}`},
+                    headers: { Authorization: `Bearer ${token}` },
                 }
             );
             console.log("Kết quả từ API create-order:", createOrderResponse.data);
-            const {order_url} = createOrderResponse.data;
+            const { order_url } = createOrderResponse.data;
             window.location.href = order_url;
         } catch (error) {
             console.error("Lỗi trong quá trình thanh toán:", error.response?.data || error.message);
@@ -511,7 +569,11 @@ function SolveBooking({onLogout}) {
             alert("Vui lòng chọn ít nhất một ghế!");
             return;
         }
+
+
         setIsPaymentLoading(true);
+
+
         try {
             const tokenString = localStorage.getItem("token");
             if (!tokenString) {
@@ -519,40 +581,110 @@ function SolveBooking({onLogout}) {
                 setIsPaymentLoading(false);
                 return;
             }
+
+
             const parsedToken = JSON.parse(tokenString);
             const token = parsedToken?.token;
+
 
             if (!token) {
                 alert("Token không hợp lệ. Vui lòng đăng nhập lại!");
                 setIsPaymentLoading(false);
                 return;
             }
+
+
+            // 🔥 BƯỚC MỚI: Kiểm tra ghế đã đặt trước khi tạo đơn thanh toán
+            const res = await axios.get(`http://localhost:5000/api/v1/showtime/${showTimeDetails._id}`);
+            console.log("Toàn bộ phản hồi từ API:", res.data);
+            const bookedSeats = res.data?.booked_seats || [];
+            console.log("Danh sách ghế đã đặt:", bookedSeats);
+
+
+            const duplicatedSeats = selectedSeats.filter(seat => bookedSeats.includes(seat));
+            console.log("Ghế người dùng đã chọn:", selectedSeats);
+            console.log("So sánh ghế người dùng chọn với ghế đã đặt:", duplicatedSeats);
+
+
+            if (duplicatedSeats.length > 0) {
+                await new Promise(resolve => setTimeout(resolve, 100)); // Giúp alert kịp hiển thị
+                alert(`Các ghế sau đã được đặt: ${duplicatedSeats.join(", ")}. Vui lòng chọn lại.`);
+                console.warn("Ghế bị trùng:", duplicatedSeats);
+                setIsPaymentLoading(false);
+
+
+                window.location.reload(); // Sau khi nhấn OK -> reload trang
+                return;
+            }
+
+
+
+
+            // ✅ Không có trùng, tiếp tục xử lý như trước
             const totalAmount = selectedSeats.reduce((total, seatId) => {
                 const seat = seats.flat().find((s) => s.seatId === seatId);
                 return total + (seat ? seat.price : 0);
             }, 0);
-            console.log(showTimeDetails?._id)
-            console.log(selectedSeats)
-            console.log(totalAmount)
-            console.log(discount)
-            console.log(totalAmount - (totalAmount * discount) / 100)
-            console.log("Tổng số tiền thanh toán:", totalAmount);
-            const createOrderResponse = await axios.post(
-                apiMomoPayUrl,
-                {
-                    show_time_id: showTimeDetails?._id,
+
+
+
+
+
+
+            // Đặt độ trễ 5 giây trước khi gọi API thanh toán
+            setTimeout(async () => {
+                console.log("Đang đợi 5 giây...");
+
+
+                // In thông tin kiểm tra trong 5 giây
+                console.log("Thông tin thanh toán:", {
+                    show_time_id: showTimeDetails._id,
                     list_seat: selectedSeats,
                     total_price: totalAmount,
                     discount: discount,
                     paid_amount: totalAmount - (totalAmount * discount) / 100,
-                },
-                {
-                    headers: {Authorization: `Bearer ${token}`},
+                });
+
+
+                // Sau 5 giây, thực hiện thanh toán
+                try {
+                    const createOrderResponse = await axios.post(
+                        apiMomoPayUrl,
+                        {
+                            show_time_id: showTimeDetails._id,
+                            list_seat: selectedSeats,
+                            total_price: totalAmount,
+                            discount: discount,
+                            paid_amount: totalAmount - (totalAmount * discount) / 100,
+                        },
+                        {
+                            headers: { Authorization: `Bearer ${token}` },
+                        }
+                    );
+
+
+                    const { payUrl } = createOrderResponse.data.data;
+                    if (!payUrl) {
+                        alert("Không nhận được đường dẫn thanh toán từ hệ thống!");
+                        setIsPaymentLoading(false);
+                        return;
+                    }
+
+
+                    window.location.href = payUrl;
+                } catch (error) {
+                    console.error("Lỗi trong quá trình thanh toán:", error.response?.data || error.message);
+                    if (error.response?.data?.EM === "Invalid token.") {
+                        alert("Token không hợp lệ. Vui lòng đăng nhập lại!");
+                    } else {
+                        alert("Có lỗi xảy ra khi thanh toán. Vui lòng thử lại!");
+                    }
+                } finally {
+                    setIsPaymentLoading(false);
                 }
-            );
-            console.log("Kết quả từ API create-order:", createOrderResponse.data);
-            const {shortLink} = createOrderResponse.data.data;
-            window.location.href = shortLink;
+            }, 5000); // Đợi 5 giây trước khi thực hiện thanh toán
+
+
         } catch (error) {
             console.error("Lỗi trong quá trình thanh toán:", error.response?.data || error.message);
             if (error.response?.data?.EM === "Invalid token.") {
@@ -565,12 +697,13 @@ function SolveBooking({onLogout}) {
         }
     };
 
+
     return (
         <>
-            {isLoading && <Loading/>}
+            {isLoading && <Loading />}
             <Container>
                 <BackButton onClick={() => navigate(-1)}>Quay lại</BackButton>
-                <Header onLogout={onLogout}/>
+                <Header onLogout={onLogout} />
                 <BodyWrapper>
                     <SeatMapContainer>
                         <Screen>Màn hình chiếu</Screen>
@@ -587,22 +720,23 @@ function SolveBooking({onLogout}) {
                                             {seat.seatId}
                                         </Seat>
 
+
                                     ))}
                                 </Row>
                             ))}
                         </SeatMap>
                         <Legend>
                             <LegendItem>
-                                <LegendColor color="#bdc3c7"/> Ghế thường
+                                <LegendColor color="#bdc3c7" /> Ghế thường
                             </LegendItem>
                             <LegendItem>
-                                <LegendColor color="#f1c40f"/> Ghế VIP
+                                <LegendColor color="#f1c40f" /> Ghế VIP
                             </LegendItem>
                             <LegendItem>
-                                <LegendColor color="#42e0f5"/> Ghế đang chọn
+                                <LegendColor color="#42e0f5" /> Ghế đang chọn
                             </LegendItem>
                             <LegendItem>
-                                <LegendColor color="#4a4a4a"/> Ghế đã đặt
+                                <LegendColor color="#4a4a4a" /> Ghế đã đặt
                             </LegendItem>
                         </Legend>
                     </SeatMapContainer>
@@ -610,7 +744,7 @@ function SolveBooking({onLogout}) {
                         {filmDetails && (
                             <>
                                 <TitleContentWrapper>
-                                    <MovieThumbnail src={filmDetails.image_url} alt="Movie Poster"/>
+                                    <MovieThumbnail src={filmDetails.image_url} alt="Movie Poster" />
                                     <MovieDetails>
                                         <h3>{filmDetails.film_name}</h3>
                                         <p>{filmDetails.category_id?.category_name || "N/A"}</p>
@@ -651,22 +785,22 @@ function SolveBooking({onLogout}) {
                         <TotalPriceContainer>
                             <p>
                                 <strong>Tổng số tiền:</strong> <span
-                                className="total-amount">{totalPrice.toLocaleString()} VND</span>
+                                    className="total-amount">{totalPrice.toLocaleString()} VND</span>
                             </p>
                         </TotalPriceContainer>
                         <MoMoButton onClick={handlePaymentMoMo}
-                                    disabled={isPaymentLoading || selectedSeats.length === 0}>
+                            disabled={isPaymentLoading || selectedSeats.length === 0}>
                             {isPaymentLoading ? 'Đang xử lý...' : 'Xác nhận đặt vé bằng'}
-                            <img src="/images/momo.png" alt="MoMo" width="24" height="24"/>
+                            <img src="/images/momo.png" alt="MoMo" width="24" height="24" />
                         </MoMoButton>
                         <ZaloButton onClick={handlePaymentZalo}
-                                    disabled={isPaymentLoading || selectedSeats.length === 0}>
+                            disabled={isPaymentLoading || selectedSeats.length === 0}>
                             {isPaymentLoading ? 'Đang xử lý...' : 'Xác nhận đặt vé bằng'}
-                            <img src="/images/zalopay.png" alt="ZaloPay" width="24" height="24"/>
+                            <img src="/images/zalopay.png" alt="ZaloPay" width="24" height="24" />
                         </ZaloButton>
                     </DetailsContainer>
                 </BodyWrapper>
-                <Footer/>
+                <Footer />
                 {showNotification && (
                     <NotificationModal>
                         <NotificationContent>
@@ -681,4 +815,6 @@ function SolveBooking({onLogout}) {
     );
 }
 
+
 export default SolveBooking;
+
