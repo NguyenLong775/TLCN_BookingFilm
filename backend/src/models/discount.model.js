@@ -27,6 +27,11 @@ const discountSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    film_id: {  
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Film',
+        required: false,  
+    },
     is_active: {
         type: Boolean,
         default: true,

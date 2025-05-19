@@ -1,7 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 
 const PaymentSuccess = () => {
+  const [searchParams] = useSearchParams();
+  const [transactionInfo, setTransactionInfo] = useState({
+    amount: "",
+    apptransid: "",
+    discountamount: "",
+    status: "",
+  });
+
+  useEffect(() => {
+    const amount = searchParams.get("amount");
+    const discountamount = searchParams.get("discountamount");
+    const apptransid = searchParams.get("apptransid");
+    const status = searchParams.get("status");
+
+    setTransactionInfo({
+      amount,
+      discountamount,
+      apptransid,
+      status,
+    });
+  }, [searchParams]);
+
+  const formatCurrency = (value) => {
+    return Number(value).toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  };
+
+  if (transactionInfo.status !== "1") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-600 font-semibold text-xl">
+          ❌ Thanh toán thất bại hoặc bị hủy.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="border-4 border-blue-500 bg-white rounded-xl shadow-md p-6 max-w-md w-full text-center">
@@ -31,9 +71,10 @@ const PaymentSuccess = () => {
 
         {/* Thông tin giao dịch */}
         <div className="text-left text-gray-800 bg-gray-100 p-4 rounded-lg mb-6 text-sm">
-          <p><strong>Mã giao dịch:</strong> #ZP123456789</p>
-          <p><strong>Thời gian:</strong> 05/11/2025 - 14:32</p>
-          <p><strong>Số tiền:</strong> 120.000đ</p>
+          <p><strong>Mã giao dịch:</strong> #{transactionInfo.apptransid}</p>
+          <p><strong>Thời gian:</strong> {new Date().toLocaleString("vi-VN")}</p>
+          <p><strong>Số tiền thanh toán:</strong> {formatCurrency(transactionInfo.amount)}</p>
+          <p><strong>Đã giảm giá:</strong> {formatCurrency(transactionInfo.discountamount)}</p>
         </div>
 
         {/* Nút */}

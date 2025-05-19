@@ -488,10 +488,12 @@ function SolveBooking({ onLogout }) {
         setVoucherSuccess('');
         setVoucherError('');
         try {
+            const film_id = showTimeDetails.film_id._id;
+        console.log("check id phim", film_id); // ✅ giờ mới hợp lệ
             const response = await axios.post(apiDiscountUrl, {
                 code: voucherCode,
+                film_id: film_id,
             });
-
 
             const { discountPercent } = response.data;
             setDiscount(discountPercent);

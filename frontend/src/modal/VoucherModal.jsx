@@ -81,6 +81,8 @@ function VoucherModal({onClose, voucherData, onSave}) {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [quantity, setQuantity] = useState("");
+    const [films, setFilms] = useState([]);
+    const [selectedFilmId, setSelectedFilmId] = useState(voucherData?.film_id || "");
     const [percent, setPercent] = useState("");
     const [loading, setLoading] = useState(false);
     console.log(voucherData);
@@ -109,6 +111,22 @@ function VoucherModal({onClose, voucherData, onSave}) {
         }
     }, [voucherData]);
 
+    useEffect(() => {
+        fetch('http://localhost:5000/api/v1/film')
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setFilms(data);
+                } else {
+                    setFilms([]);
+                }
+            })
+            .catch(err => {
+                console.error("Failed to fetch films:", err);
+                setFilms([]);
+            });
+    }, []);
+
     const handleCreateOrUpdate = async () => {
         setLoading(true);
         const voucher = {
@@ -118,6 +136,7 @@ function VoucherModal({onClose, voucherData, onSave}) {
             end_date: endDate,
             quantity: quantity,
             percent: percent,
+            film_id: selectedFilmId,
         };
 
         try {
@@ -169,6 +188,20 @@ function VoucherModal({onClose, voucherData, onSave}) {
                             placeholder="Enter discount code"
                         />
                     </FormGroup>
+                    <FormGroup>
+    <LabelCustom>Film Apply:</LabelCustom>
+    <select
+        value={selectedFilmId}
+        onChange={(e) => setSelectedFilmId(e.target.value)}
+    >
+        <option value="">-- Chọn phim --</option>
+        {films.map(film => (
+            <option key={film._id} value={film._id}>
+                {film.film_name}
+            </option>
+        ))}
+    </select>
+</FormGroup>
                     <FormGroupRow>
                         <FormGroup>
                             <LabelCustom>Start Date:</LabelCustom>

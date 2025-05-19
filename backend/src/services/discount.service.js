@@ -21,13 +21,13 @@ const updateDiscountService = async (id, discount) => {
 
 const getDiscountsService = async () => {
   try {
-    return await Discount.find();
+    return await Discount.find().populate('film_id');
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-const getDiscountByCodeService = async (code) => {
+const getDiscountByCodeService = async (code, filmId) => {
   try {
     const discount = await Discount.findOne({ discount_code: code });
 
@@ -49,6 +49,10 @@ const getDiscountByCodeService = async (code) => {
 
     if (discount.quantity <= 0) {
       throw new Error("Mã giảm giá đã hết số lượng sử dụng");
+    }
+
+    if (discount.film_id && filmId && discount.film_id.toString() !== filmId) {
+      throw new Error("Mã giảm giá không áp dụng cho phim này");
     }
 
     return discount;

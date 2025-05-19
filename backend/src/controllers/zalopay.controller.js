@@ -27,7 +27,7 @@ exports.createOrderZaloPay = async (req, res) => {
         total_price,
         discount,
         paid_amount,
-        redirecturl: `https://booking-film.onrender.com/user`,
+        redirecturl: `http://localhost:5173/transaction-zalo`,
       }),
       item: JSON.stringify([]),
       bank_code: "zalopayapp",

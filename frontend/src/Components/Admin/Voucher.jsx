@@ -100,7 +100,8 @@ function Voucher() {
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Quantity</th>
-                        <th>Percent Discount</th>
+                            <th>Percent Discount</th>
+                            <th>Film Apply</th>
                         <th>Status</th>
                         <th>Created Date</th>
                         <th>Action</th>
@@ -116,6 +117,7 @@ function Voucher() {
                                 <td>{new Date(voucherItem.end_date).toLocaleDateString()}</td>
                                 <td>{voucherItem.quantity}</td>
                                 <td>{voucherItem.percent}%</td>
+                                <td>{voucherItem.film_id ? voucherItem.film_id.film_name : "All Film"}</td>
                                 <td>{voucherItem.is_active ? "Active" : "Inactive"}</td>
                                 <td>{new Date(voucherItem.created_at).toLocaleDateString()}</td>
                                 <td>

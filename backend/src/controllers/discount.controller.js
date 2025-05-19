@@ -35,17 +35,22 @@ const putUpdateDiscount = async (req, res) => {
 
 const postApplyDiscount = async (req, res) => {
   try {
-    const { code } = req.body;
-    const discount = await getDiscountByCodeService(code);
+    const { code, film_id } = req.body;
 
-    res.status(200).json({
+    if (!code || !film_id) {
+      return res.status(400).json({ message: "Thiếu mã giảm giá hoặc ID phim" });
+    }
+
+    const discount = await getDiscountByCodeService(code, film_id);
+
+    return res.status(200).json({
       discountName: discount.discount_name,
       discountPercent: discount.percent,
       discountCode: discount.discount_code,
       message: "Mã giảm giá áp dụng thành công",
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message || "Đã xảy ra lỗi khi áp dụng mã" });
   }
 };
 
