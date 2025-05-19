@@ -6,6 +6,9 @@ import User from './pages/User.jsx';
 import BookingHistory from "./Components/User/BookingHistory.jsx";
 import SolveBooking from "./Components/User/SolveBooking.jsx";
 import TransactionStatus from "./pages/TransactionStatus.jsx";
+import ReviewFilm from './Components/User/ReviewFilm.jsx';
+import PaymentSuccess from './pages/TransactionZalo.jsx';
+
 
 
 function App() {
@@ -55,6 +58,10 @@ function App() {
                 element={<BookingHistory onLogout={handleLogout}/>}
             />
             <Route
+                path="/user/review"
+                element={<ReviewFilm onLogout={handleLogout} />}
+            />
+            <Route
                 path="/user/booking/:showTimeId"
                 element={<SolveBooking onLogout={handleLogout}/>}
             />
@@ -69,6 +76,7 @@ function App() {
                 }
             />
             <Route path="/transaction-status" element={<TransactionStatus/>}/>
+            <Route path="/transaction-zalo" element={<PaymentSuccess/>}/>
             <Route path="*" element={<Navigate to="/"/>}/>
         </Routes>
     );
